@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="LoginManager.SettingPage">
+    <VerticalStackLayout>
+        <VerticalStackLayout Padding="40, 0" >
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="220" />
+                    <ColumnDefinition Width="400" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" Text="Hlavní heslo" FontSize="Medium" FontAttributes="Bold" HorizontalOptions="Start" />
+                <Entry Grid.Row="0" Grid.Column="1" x:Name="MainPassword" FontSize="Medium" Placeholder="Hlavní heslo" IsPassword="True" Text="{Binding MainPassword, Mode=TwoWay}" />
+                <Label Grid.Row="1" Grid.Column="0" Text="Formát data" FontSize="Medium" FontAttributes="Bold" HorizontalOptions="Start" />
+                <Picker Grid.Row="1" Grid.Column="1" x:Name="DateFormatPicker" FontSize="Medium" SelectedIndex="0" 
+                        ItemsSource="{Binding DateFormats, Mode=TwoWay}"
+                        SelectedItem="{Binding SelectedFormat}" />
+                <Label Grid.Row="2" Grid.Column="0" Text="Barevné schéma" FontSize="Medium" FontAttributes="Bold" HorizontalOptions="Start" />
+                <Picker Grid.Row="2" Grid.Column="1" x:Name="ColorSchemePicker" FontSize="Medium" SelectedIndex="0"
+                        ItemsSource="{Binding ColorSchemes, Mode=TwoWay}"
+                        SelectedItem="{Binding SelectedScheme}" />
+            </Grid>
+        </VerticalStackLayout>
+        <Button x:Name="SaveBtn" Text="Uložit lokálně" Command="{Binding SaveCommand}" />
+        <Button Text="Uložit a exportovat na cloudu" Pressed="OnExportPressed" Released="OnExportReleased" />
+        <Button Text="Importovat z cloudu" Pressed="OnImportPressed" Released="OnImportReleased" />
+        <Button Text="Zpět" Command="{Binding NavigateBackCommand}"/>
+    </VerticalStackLayout>
+</ContentPage>

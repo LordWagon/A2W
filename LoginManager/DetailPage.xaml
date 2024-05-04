@@ -1,0 +1,36 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="LoginManager.DetailPage">
+    <VerticalStackLayout>
+        <VerticalStackLayout>
+            <Label HorizontalTextAlignment="Center" FontSize="Large" FontAttributes="Bold" x:Name="Title" Text="{Binding DetailTitle, Mode=OneTime}" Margin="20" />
+            <Grid Padding="40, 0" VerticalOptions="Start">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60" />
+                    <RowDefinition Height="60" />
+                    <RowDefinition Height="60" />
+                    <RowDefinition Height="60" />
+                    <RowDefinition Height="60" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="{OnIdiom Phone='0', Desktop='220'}" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label IsVisible="{OnIdiom Phone='False', Desktop='True'}"  Grid.Row="0" Grid.Column="0" Padding="0, 12" Text="Název" FontSize="Medium" FontAttributes="Bold" />
+                <Entry Grid.Row="0" Grid.Column="1" FontSize="Medium" x:Name="Name" Text="{Binding Name, Mode=TwoWay}" Placeholder="Název" />
+                <Label IsVisible="{OnIdiom Phone='False', Desktop='True'}" Grid.Row="1" Grid.Column="0" Padding="0, 12" Text="Umístění" FontSize="Medium" FontAttributes="Bold" />
+                <Entry Grid.Row="1" Grid.Column="1" FontSize="Medium" x:Name="Location" Text="{Binding Location, Mode=TwoWay}"  Placeholder="Umístění" />
+                <Label IsVisible="{OnIdiom Phone='False', Desktop='True'}" Grid.Row="2" Grid.Column="0" Padding="0, 12" Text="Uživatelské jméno" FontSize="Medium" FontAttributes="Bold" />
+                <Entry Grid.Row="2" Grid.Column="1" FontSize="Medium" x:Name="Username" Text="{Binding Username, Mode=TwoWay}" Placeholder="Uživatelské jméno" />
+                <Label IsVisible="{OnIdiom Phone='False', Desktop='True'}" Grid.Row="3" Grid.Column="0" Padding="0, 12" Text="Heslo" FontSize="Medium" FontAttributes="Bold" />
+                <Entry Grid.Row="3" Grid.Column="1" FontSize="Medium" x:Name="Password" Text="{Binding Password, Mode=TwoWay}" Placeholder="Heslo" />
+                <Label IsVisible="{OnIdiom Phone='False', Desktop='True'}" Grid.Row="4" Grid.Column="0" Padding="0, 12" Text="Poznámka" FontSize="Medium" FontAttributes="Bold" />
+                <Entry Grid.Row="4" Grid.Column="1" FontSize="Medium" x:Name="Notes" Text="{Binding Notes, Mode=TwoWay}" Placeholder="Poznámka" />
+            </Grid>
+            <Button FontSize="Medium" FontAttributes="Bold" x:Name="SaveBtn" Text="Uložit" Margin="20"
+                    Command="{Binding SaveCommand}" />
+            <Button FontSize="Medium" FontAttributes="Bold" Text="Zpět" Margin="20"
+                    Clicked="OnNavigateButtonBack" />
+        </VerticalStackLayout>
+    </VerticalStackLayout>
+</ContentPage>

@@ -1,0 +1,13 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="LoginManager.LoginPage">
+    <VerticalStackLayout>
+        <HorizontalStackLayout Padding="40, 20" >
+            <Label Text="Hlavní heslo" FontSize="Medium" FontAttributes="Bold" HorizontalOptions="Center" />
+            <Entry Margin="20, -10" x:Name="MainPassword" FontSize="Medium" Placeholder="Hlavní heslo" IsPassword="True" Text="{Binding MainPassword, Mode=TwoWay}" />
+        </HorizontalStackLayout>
+        <Label FontSize="Medium" Text="{Binding WarningText}" TextColor="Red" IsVisible="{Binding IncorrectPassword}" />
+        <Button Text="Login" Clicked="OnNavigateButtonLoginClicked" />
+        <!--<Button Text="Login" Command="{Binding LoginCommand}" />-->
+    </VerticalStackLayout>
+</ContentPage>
