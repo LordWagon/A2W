@@ -24,14 +24,14 @@ namespace LoginManager
          */
 
         DataService dataService;
+        MainPageViewModel viewModel;
 
         public ListPage()
         {
             InitializeComponent();
             dataService = new DataService();
-            this.BindingContext = new MainPageViewModel(dataService);
-
-         
+            viewModel = new MainPageViewModel(dataService);
+            this.BindingContext = viewModel;
         }
         
         public void OnLeftClickEvent(object sender, EventArgs e) 
@@ -92,6 +92,18 @@ namespace LoginManager
                 System.Environment.Exit(0);
             });
             return true;
+        }
+
+        private void OnScrolled(object sender, ItemsViewScrolledEventArgs e)
+        {
+            // Detekce konce seznamu
+            var threshold = 250; // pixely od konce seznamu, kde začneme načítat další data
+            var isAtBottom = e.VerticalOffset < threshold;
+
+            if (isAtBottom && viewModel.isLoading)
+            {
+                viewModel.LoadMoreItemsCommand.Execute(null);
+            }
         }
     }
 }
