@@ -99,8 +99,7 @@ public class DetailViewModel : BaseViewModel, INotifyPropertyChanged
     }
 
     public ICommand SaveCommand { get; private set; }
-    
-    public ICommand NavigateBackCommand { get; }
+    public ICommand NavigateBackCommand { get; private set; }
 
     public DetailViewModel(IDataStorageService storageService, int id)
     {
@@ -114,7 +113,7 @@ public class DetailViewModel : BaseViewModel, INotifyPropertyChanged
         Password = record.Password;
         Notes = record.Notes;
 
-        //NavigateBackCommand = new Command(async () => await _navigationService.NavigateToAsync<MainPageViewModel>());
+        NavigateBackCommand = new Command(async () => await Application.Current.MainPage.Navigation.PushAsync(new ListPage()));
         SaveCommand = new Command(SaveRecord);
     }
     
@@ -129,7 +128,5 @@ public class DetailViewModel : BaseViewModel, INotifyPropertyChanged
         record.DateCreated = record.MakeDateForDB();
         record.DateToDisplay = record.MakeDateToDisplay();
         _dataService.Update(record);
-
-       
     }
 }

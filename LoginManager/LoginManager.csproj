@@ -81,21 +81,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Resource Include="Platforms\Android\Resources\A2W.db">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Resource>
-	  <Resource Include="Platforms\Android\Resources\Cipher.IV">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Resource>
-	  <Resource Include="Platforms\Android\Resources\Cipher.key">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Resource>
-	  <Resource Include="Platforms\Android\Resources\ftpSetting.xml">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Resource>
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeCoverage" Version="17.8.0" />
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />

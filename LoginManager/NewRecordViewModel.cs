@@ -109,7 +109,5 @@ public class NewRecordViewModel : BaseViewModel, INotifyPropertyChanged
         record.DateCreated = record.MakeDateForDB();
         record.DateToDisplay = record.MakeDateToDisplay();
         _dataService.Create(record);
-
-        NavigateBackCommand.Execute(null);
     }
 }

@@ -12,14 +12,14 @@ public class MainPageViewModel : BaseViewModel, INotifyPropertyChanged
     private SortableObservableCollection<Record> _items;
     public SortableObservableCollection<Record> Items
     {
-        get => _items;
+        get { return _items; }
         set
         {
             _items = value;
             OnPropertyChanged(nameof(Items));
         }
     }
-
+    
     private string _direction0;
     public string Direction0
     {
@@ -80,17 +80,8 @@ public class MainPageViewModel : BaseViewModel, INotifyPropertyChanged
         get => allRecordsE;
         set => allRecordsE = value;
     }
-
     
-    private int currentPage = 0;
-
-#if ANDROID
-    private int itemsPerPage = 20; 
-#else
-    private int itemsPerPage = 8192;
-#endif
-    public bool isLoading = false;
-    
+    public bool isLoading = true;
 
     public event PropertyChangedEventHandler PropertyChanged;
     protected virtual void OnPropertyChanged(string propertyName)
@@ -107,11 +98,17 @@ public class MainPageViewModel : BaseViewModel, INotifyPropertyChanged
 
     IDataStorageService dataService;
 
+    public delegate void Slide();
+    public event Slide OnLoadingToSlide;
+    public void NotifyBackToCodeBehind()
+    {
+        OnLoadingToSlide?.Invoke();
+    }
+
     public MainPageViewModel(IDataStorageService storageService)
     {
-        Items = new SortableObservableCollection<Record>(); 
         AllRecords = new List<Record>();
-        
+        Items = new SortableObservableCollection<Record>();
         
         dataService = storageService;
 
@@ -124,93 +121,26 @@ public class MainPageViewModel : BaseViewModel, INotifyPropertyChanged
         AddCommand = new Command(async () => await Application.Current.MainPage.Navigation.PushAsync(new NewRecordPage()));
         FilterCommand = new Command(async () => await FilterChanged());
 
-        LoadMoreItemsCommand = new Command(LoadMoreItems);
-        Task.Run(() => LoadInitialItems());
-
-        //Task.Run(async () => await LoadAll());
-        //LoadInitialItems();
+        LoadAll();
     }
     
-    private void LoadInitialItems()
+    private async void LoadAll()
     {
-        LoadMoreItems();
-    }
-    
-    /*
-    private void LoadMoreItems()
-    {
-        if (isLoading)
-            return;
-
-        isLoading = true;
-
-        var items = DataService.GetItems(currentPage, itemsPerPage);
-        foreach (var item in items)
+        isLoading= true;
+        foreach (var item in dataService.GetData())
         {
             Items.Add(item);
+            AllRecords.Add(item);
+            await Task.Delay(50);
         }
-
-        currentPage++;
         isLoading = false;
+        NotifyBackToCodeBehind();
     }
-    */
-
-    
-    private void LoadMoreItems()
-    {
-        if (isLoading) return;
-        isLoading = true;
-
-        // Simulate an async data load
-        Task.Run(() =>
-        {
-            var newItems = DataService.GetItems(currentPage, itemsPerPage);
-            Device.BeginInvokeOnMainThread(() =>
-            {
-            //    Items.SetRange(newItems, false);
-                foreach (var item in newItems)
-                {
-                    Items.Add(item);
-                    AllRecords.Add(item);
-                }
-                currentPage++;
-                isLoading = false;
-            });
-        });
-    }
-    
-
-    /*
-    private async Task LoadAll()
-    {
-        for (int currentPage = 0; currentPage < 20; currentPage++)
-        {
-            AllRecords.AddRange(DataService.GetItems(currentPage, itemsPerPage));
-            Items.SetRange(DataService.GetItems(currentPage, itemsPerPage), false);
-            //AllRecords.AddRange(DataService.GetItems(i, itemsPerPage));
-            //Items.SetRange(AllRecords);
-        }
-    }
-    */
-
-    /*
-    private async Task LoadItems()
-    {
-        //AllRecords = dataService.GetAll();
-        
-        
-        IEnumerator<Record> ienum = dataService.GetEnumerator();
-        while (ienum.MoveNext())
-        {
-            Items.Add(ienum.Current);
-            AllRecords.Add(ienum.Current);
-        }
-    }
-    */
-
 
     private async Task OnLabelTapped(object? arg)
     {
+        if (isLoading)
+            return;
         switch (arg)
         {
             case "0":
@@ -236,21 +166,17 @@ public class MainPageViewModel : BaseViewModel, INotifyPropertyChanged
                 break;
         }
     }
-
+    
+    
     private async Task FilterChanged()
     {
+        if (isLoading)
+            return;
         Items.SetRange(AllRecords.Where(x => x.Name.Contains(FilterText, StringComparison.OrdinalIgnoreCase)));
     }
-
+    
     private string SwitchDirection(string recentDirection)
     {
-        if (recentDirection == _UP)
-        {
-            return _DOWN;
-        }
-        else
-        {
-            return _UP;
-        }
+        return recentDirection == _UP ? _DOWN : _UP;
     }
 }

@@ -31,6 +31,8 @@ namespace LoginManager
             InitializeComponent();
             dataService = new DataService();
             viewModel = new MainPageViewModel(dataService);
+            DataItems.ItemsSource = viewModel.Items;
+            OnLoading();
             this.BindingContext = viewModel;
         }
         
@@ -59,8 +61,8 @@ namespace LoginManager
             if (answer)
             {
                 dataService.Delete(id);
-                this.BindingContext = new MainPageViewModel(dataService);
-                
+                //this.BindingContext = new MainPageViewModel(dataService);
+                await Navigation.PushAsync(new ListPage());
             }
         }
 
@@ -94,16 +96,15 @@ namespace LoginManager
             return true;
         }
 
-        private void OnScrolled(object sender, ItemsViewScrolledEventArgs e)
+        public void OnLoading()
         {
-            // Detekce konce seznamu
-            var threshold = 250; // pixely od konce seznamu, kde začneme načítat další data
-            var isAtBottom = e.VerticalOffset < threshold;
-
-            if (isAtBottom && viewModel.isLoading)
-            {
-                viewModel.LoadMoreItemsCommand.Execute(null);
-            }
+            viewModel.OnLoadingToSlide += Slide;
         }
+
+        public void Slide()
+        {
+            Debug.WriteLine("Slide after loading");
+        }
+
     }
 }

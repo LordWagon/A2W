@@ -9,9 +9,4 @@ public partial class DetailPage : ContentPage
         InitializeComponent();
         this.BindingContext = new DetailViewModel(storageService, id);
     }
-    
-    private async void OnNavigateButtonBack(object sender, EventArgs e)
-    {
-        await Navigation.PopAsync();
-    }
 }

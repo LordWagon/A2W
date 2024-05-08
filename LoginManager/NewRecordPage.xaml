@@ -31,7 +31,6 @@
         </VerticalStackLayout>
         <Button x:Name="SaveBtn" FontSize="Medium" FontAttributes="Bold"  Text="Uložit" Margin="20"
                 Command="{Binding SaveCommand}"/>
-        <Button FontSize="Medium" FontAttributes="Bold" Text="Zpět" Margin="20"
-                Clicked="OnNavigateButtonBackClicked"/>
+        <Button FontSize="Medium" FontAttributes="Bold" Text="Zpět" Margin="20" Command="{Binding NavigateBackCommand}" />
     </VerticalStackLayout>
 </ContentPage>

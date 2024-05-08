@@ -19,7 +19,6 @@ namespace LoginManager
     		builder.Logging.AddDebug();
 #endif
 
-
             return builder.Build();
         }
     }
