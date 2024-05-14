@@ -6,6 +6,8 @@ using Microsoft.Maui.Controls;
 using Microsoft.Maui;
 using System.ComponentModel.Design;
 using Microsoft.Maui.ApplicationModel.Communication;
+using Microsoft.Maui.Controls.Compatibility;
+using System.Threading;
 
 namespace LoginManager
 {
@@ -25,13 +27,20 @@ namespace LoginManager
 
         DataService dataService;
         MainPageViewModel viewModel;
-
+        Animation animation1;
+        Animation animation0;
+        
         public ListPage()
         {
             InitializeComponent();
             dataService = new DataService();
             viewModel = new MainPageViewModel(dataService);
             DataItems.ItemsSource = viewModel.Items;
+   
+
+
+            UpperGrid.RowDefinitions[0].Height = new GridLength(0);
+            UpperGrid.RowDefinitions[1].Height = new GridLength(0);
             OnLoading();
             this.BindingContext = viewModel;
         }
@@ -98,13 +107,40 @@ namespace LoginManager
 
         public void OnLoading()
         {
-            viewModel.OnLoadingToSlide += Slide;
+                viewModel.OnLoadingToSlide += Slide;
         }
 
         public void Slide()
         {
             Debug.WriteLine("Slide after loading");
-        }
 
+            animation1 = new Animation(
+                callback: v => MainThread.BeginInvokeOnMainThread(() => UpperGrid.RowDefinitions[1].Height = new GridLength(v)),
+                start: 0,
+                end: 150
+            );
+            animation1.Commit(
+                owner: UpperGrid,
+                name: "RowHeightAnimation1",
+                length: 2000,
+                easing: Easing.Linear,
+                finished: (v, c) => MainThread.BeginInvokeOnMainThread(() => UpperGrid.RowDefinitions[1].Height = new GridLength(150, GridUnitType.Absolute)),
+                repeat: () => false
+            );
+
+            animation0 = new Animation(
+                callback: v => MainThread.BeginInvokeOnMainThread(() => UpperGrid.RowDefinitions[0].Height = new GridLength(v)),
+                start: 0,
+                end: 150
+            );
+            animation0.Commit(
+                    owner: UpperGrid,
+                    name: "RowHeightAnimation0",
+                    length: 2000,
+                    easing: Easing.Linear,
+                    finished: (v, c) => MainThread.BeginInvokeOnMainThread(() => UpperGrid.RowDefinitions[0].Height = new GridLength(150, GridUnitType.Absolute)),
+                    repeat: () => false
+            );
+        }
     }
 }

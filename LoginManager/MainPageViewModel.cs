@@ -100,11 +100,13 @@ public class MainPageViewModel : BaseViewModel, INotifyPropertyChanged
 
     public delegate void Slide();
     public event Slide OnLoadingToSlide;
+    
+    
     public void NotifyBackToCodeBehind()
     {
         OnLoadingToSlide?.Invoke();
     }
-
+    
     public MainPageViewModel(IDataStorageService storageService)
     {
         AllRecords = new List<Record>();

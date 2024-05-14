@@ -112,9 +112,10 @@ public class DetailViewModel : BaseViewModel, INotifyPropertyChanged
         Username = record.Username;
         Password = record.Password;
         Notes = record.Notes;
-
+        
         NavigateBackCommand = new Command(async () => await Application.Current.MainPage.Navigation.PushAsync(new ListPage()));
         SaveCommand = new Command(SaveRecord);
+        
     }
     
     private void SaveRecord()
