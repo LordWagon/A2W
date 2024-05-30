@@ -112,13 +112,12 @@ public class DetailViewModel : BaseViewModel, INotifyPropertyChanged
         Username = record.Username;
         Password = record.Password;
         Notes = record.Notes;
-        
         NavigateBackCommand = new Command(async () => await Application.Current.MainPage.Navigation.PushAsync(new ListPage()));
         SaveCommand = new Command(SaveRecord);
         
     }
     
-    private void SaveRecord()
+    private async void SaveRecord()
     {
         record.Name = Name;
         record.Location = Location;
@@ -129,5 +128,6 @@ public class DetailViewModel : BaseViewModel, INotifyPropertyChanged
         record.DateCreated = record.MakeDateForDB();
         record.DateToDisplay = record.MakeDateToDisplay();
         _dataService.Update(record);
+        await Application.Current.MainPage.Navigation.PushAsync(new ListPage());
     }
 }

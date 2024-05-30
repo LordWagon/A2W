@@ -100,11 +100,22 @@ public class MainPageViewModel : BaseViewModel, INotifyPropertyChanged
 
     public delegate void Slide();
     public event Slide OnLoadingToSlide;
+    public delegate void Sorting(bool isSorting);
+    public event Sorting IsSorting;
+    public delegate void ChangeSort(object? arg);
+    public event ChangeSort OnChangeSort;
     
     
     public void NotifyBackToCodeBehind()
     {
         OnLoadingToSlide?.Invoke();
+    }
+
+    public void SortingTask(object? arg)
+    {
+        IsSorting?.Invoke(true);   
+        OnChangeSort?.Invoke(arg);
+        //OnLabelTapped(arg);
     }
     
     public MainPageViewModel(IDataStorageService storageService)
@@ -118,17 +129,17 @@ public class MainPageViewModel : BaseViewModel, INotifyPropertyChanged
         Direction1 = _UP;
         Direction2 = _UP;
 
-        LabelTappedCommand = new Command(async(object? arg) => await OnLabelTapped(arg));
+        LabelTappedCommand = new Command((arg) => SortingTask(arg));
         SettingCommand = new Command(async () => await Application.Current.MainPage.Navigation.PushAsync(new SettingPage()));
         AddCommand = new Command(async () => await Application.Current.MainPage.Navigation.PushAsync(new NewRecordPage()));
         FilterCommand = new Command(async () => await FilterChanged());
-
+        OnChangeSort += OnLabelTapped;
         LoadAll();
     }
-    
+
     private async void LoadAll()
     {
-        isLoading= true;
+        isLoading = true;
         foreach (var item in dataService.GetData())
         {
             Items.Add(item);
@@ -139,34 +150,45 @@ public class MainPageViewModel : BaseViewModel, INotifyPropertyChanged
         NotifyBackToCodeBehind();
     }
 
-    private async Task OnLabelTapped(object? arg)
+
+    private void OnLabelTapped(object? arg)
     {
         if (isLoading)
             return;
+        Task task = null;
         switch (arg)
         {
             case "0":
                 if (Direction0 == _DOWN)
-                    Task.Run(() => Items.Sort(x => x.Id, true));
+                    task = new(() => { Items.Sort(x => x.Id, true); });
                 else
-                    Task.Run(() => Items.Sort(x => x.Id, false));
+                    task = new(() => { Items.Sort(x => x.Id, false); });
                 Direction0 = SwitchDirection(Direction0);
                 break;
             case "1":
                 if (Direction1 == _DOWN)
-                    Task.Run(() => Items.Sort(x => x.Name, true));
+                    task = new (() => {Items.Sort(x => x.Name, true); }); 
                 else
-                    Task.Run(() => Items.Sort(x => x.Name, false));
+                    task = new (() => {Items.Sort(x => x.Name, false); });
                 Direction1 = SwitchDirection(Direction1);
                 break;
             case "2":
                 if (Direction2 == _DOWN)
-                    Task.Run(() => Items.Sort(x => x.DateOnlyCreated, true));
+                    task = new(() => { Items.Sort(x => x.DateOnlyCreated, true); });
                 else
-                    Task.Run(() => Items.Sort(x => x.DateOnlyCreated, false));
+                    task = new(() => { Items.Sort(x => x.DateOnlyCreated, false); });
                 Direction2 = SwitchDirection(Direction2);
                 break;
         }
+
+        task.RunSynchronously();
+        
+        //while (!task.WaitAsync)
+       // {
+       //     bool x = true;
+        //}
+        //IsSorting?.Invoke(false);
+        //SortingTask(task);
     }
     
     
@@ -174,7 +196,7 @@ public class MainPageViewModel : BaseViewModel, INotifyPropertyChanged
     {
         if (isLoading)
             return;
-        Items.SetRange(AllRecords.Where(x => x.Name.Contains(FilterText, StringComparison.OrdinalIgnoreCase)));
+        Items.SetRange(AllRecords.Where(x => x.Name.Contains(FilterText??"", StringComparison.OrdinalIgnoreCase)));
     }
     
     private string SwitchDirection(string recentDirection)

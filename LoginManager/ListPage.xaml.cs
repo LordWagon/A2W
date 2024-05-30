@@ -29,6 +29,9 @@ namespace LoginManager
         MainPageViewModel viewModel;
         Animation animation1;
         Animation animation0;
+        double startMainBlockHeight = 0;
+        double endMainBlockHeight = 0;
+        bool isLoaded = false;
         
         public ListPage()
         {
@@ -36,15 +39,65 @@ namespace LoginManager
             dataService = new DataService();
             viewModel = new MainPageViewModel(dataService);
             DataItems.ItemsSource = viewModel.Items;
-   
+            this.SizeChanged += ListPage_SizeChanged;    
+            UpperGrid.SizeChanged += ListPage_SizeChanged;
+            viewModel.IsSorting += DisableItems;
 
 
-            UpperGrid.RowDefinitions[0].Height = new GridLength(0);
-            UpperGrid.RowDefinitions[1].Height = new GridLength(0);
+
+            WrapperGrid.RowDefinitions[0].Height = new GridLength(0);
+            WrapperGrid.RowDefinitions[1].Height = new GridLength(startMainBlockHeight);
+            UnderGrid.RowDefinitions[0].Height = new GridLength(startMainBlockHeight);
+            WrapperGrid.RowDefinitions[2].Height = new GridLength(90);
+
+
             OnLoading();
             this.BindingContext = viewModel;
         }
-        
+
+        private void ListPage_SizeChanged(object? sender, EventArgs e)
+        {
+            startMainBlockHeight = 560 + (this.Window.Height - 854) + 40;
+            endMainBlockHeight = 360 + (this.Window.Height - 854) + 40;
+
+            if (!isLoaded)
+            {
+                UpperGrid.IsVisible = false;
+
+
+                WrapperGrid.RowDefinitions[0].Height = new GridLength(0);
+                WrapperGrid.RowDefinitions[1].Height = new GridLength(startMainBlockHeight);
+                UnderGrid.RowDefinitions[0].Height = new GridLength(startMainBlockHeight);
+                WrapperGrid.RowDefinitions[2].Height = new GridLength(90);
+
+
+                //UpperGrid.RowDefinitions[0].Height = new GridLength(0);
+                //UpperGrid.RowDefinitions[1].Height = new GridLength(0);
+                //heightGap = 100;            
+            }
+            else
+            {
+                UpperGrid.IsVisible = true;
+                WrapperGrid.RowDefinitions[0].Height = new GridLength(200);
+                WrapperGrid.RowDefinitions[1].Height = new GridLength(endMainBlockHeight);
+                UnderGrid.RowDefinitions[0].Height = new GridLength(endMainBlockHeight);
+                WrapperGrid.RowDefinitions[2].Height = new GridLength(90);
+            }
+
+            //1023, 853.33
+
+            /*
+            WrapperGrid.RowDefinitions[2].Height = new GridLength(50);
+            UnderGrid.RowDefinitions[0].Height = new GridLength(
+                this.Window.Height - (
+                    WrapperGrid.RowDefinitions[0].Height.Value +
+                    WrapperGrid.RowDefinitions[2].Height.Value));
+            WrapperGrid.RowDefinitions[1].Height = new GridLength(UnderGrid.RowDefinitions[0].Height.Value);
+            */
+            //WrapperGrid.RowDefinitions[2].Height = new GridLength(this.Window.Height - WrapperGrid.RowDefinitions[0].Height.Value - WrapperGrid.RowDefinitions[1].Height.Value);
+                
+        }
+
         public void OnLeftClickEvent(object sender, EventArgs e) 
         {
             if (!(e is TappedEventArgs tappedEventArgs))
@@ -52,7 +105,7 @@ namespace LoginManager
 
             if (!(tappedEventArgs.Parameter is int id))
                 return;
-            
+
             Navigation.PushAsync(new DetailPage(dataService, id));
         }
 
@@ -108,39 +161,65 @@ namespace LoginManager
         public void OnLoading()
         {
                 viewModel.OnLoadingToSlide += Slide;
+                
         }
 
         public void Slide()
         {
+            isLoaded = true;
+            UpperGrid.IsVisible = true;
             Debug.WriteLine("Slide after loading");
 
             animation1 = new Animation(
-                callback: v => MainThread.BeginInvokeOnMainThread(() => UpperGrid.RowDefinitions[1].Height = new GridLength(v)),
+                callback: v => MainThread.BeginInvokeOnMainThread(() => WrapperGrid.RowDefinitions[0].Height = new GridLength(v)),
                 start: 0,
-                end: 150
+                end: 200
             );
             animation1.Commit(
                 owner: UpperGrid,
-                name: "RowHeightAnimation1",
-                length: 2000,
+                name: "RowHeightAnimation0",
+                length: 200,
                 easing: Easing.Linear,
-                finished: (v, c) => MainThread.BeginInvokeOnMainThread(() => UpperGrid.RowDefinitions[1].Height = new GridLength(150, GridUnitType.Absolute)),
+                finished: (v, c) => MainThread.BeginInvokeOnMainThread(() => WrapperGrid.RowDefinitions[0].Height = new GridLength(200, GridUnitType.Absolute)),
                 repeat: () => false
             );
 
             animation0 = new Animation(
-                callback: v => MainThread.BeginInvokeOnMainThread(() => UpperGrid.RowDefinitions[0].Height = new GridLength(v)),
-                start: 0,
-                end: 150
+                callback: v => MainThread.BeginInvokeOnMainThread(() => WrapperGrid.RowDefinitions[1].Height = new GridLength(v)),
+                start: startMainBlockHeight,
+                end: endMainBlockHeight
             );
             animation0.Commit(
                     owner: UpperGrid,
-                    name: "RowHeightAnimation0",
-                    length: 2000,
+                    name: "RowHeightAnimation1",
+                    length: 200,
                     easing: Easing.Linear,
-                    finished: (v, c) => MainThread.BeginInvokeOnMainThread(() => UpperGrid.RowDefinitions[0].Height = new GridLength(150, GridUnitType.Absolute)),
+                    finished: (v, c) => MainThread.BeginInvokeOnMainThread(() => WrapperGrid.RowDefinitions[1].Height = new GridLength(endMainBlockHeight, GridUnitType.Absolute)),
                     repeat: () => false
             );
+            var animation0b = new Animation(
+                callback: v => MainThread.BeginInvokeOnMainThread(() => UnderGrid.RowDefinitions[0].Height = new GridLength(v)),
+                start: startMainBlockHeight,
+                end: endMainBlockHeight
+            );
+            animation0b.Commit(
+                    owner: UpperGrid,
+                    name: "RowHeightAnimation1b",
+                    length: 200,
+                    easing: Easing.Linear,
+                    finished: (v, c) => MainThread.BeginInvokeOnMainThread(() => UnderGrid.RowDefinitions[0].Height = new GridLength(endMainBlockHeight, GridUnitType.Absolute)),
+                    repeat: () => false
+            );
+        }
+
+        public void DisableItems(bool isSorting)
+        {
+            if ( isSorting )
+                DataItems.IsEnabled = false;
+            else
+                DataItems.IsEnabled = true;
+            Task.Delay(2000);
+            //DataItems.IsEnabled = !isSorting;
         }
     }
 }

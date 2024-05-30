@@ -94,11 +94,11 @@ public class NewRecordViewModel : BaseViewModel, INotifyPropertyChanged
     {
         _dataService = storageService;
 
-        NavigateBackCommand = new Command(async () => await Application.Current.MainPage.Navigation.PushAsync(new ListPage()));
+        NavigateBackCommand = new Command(async () => await Application.Current.MainPage.Navigation.PopAsync());
         SaveCommand = new Command(SaveRecord);
     }
 
-    private void SaveRecord()
+    private async void SaveRecord()
     {
         record.Name = Name;
         record.Location = Location;
@@ -109,5 +109,6 @@ public class NewRecordViewModel : BaseViewModel, INotifyPropertyChanged
         record.DateCreated = record.MakeDateForDB();
         record.DateToDisplay = record.MakeDateToDisplay();
         _dataService.Create(record);
+        await Application.Current.MainPage.Navigation.PushAsync(new ListPage());
     }
 }
